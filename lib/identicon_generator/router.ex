@@ -1,13 +1,17 @@
 defmodule IdenticonGenerator.Router do
   use Plug.Router
+  use Plug.Debugger
 
+  require Logger
+
+  plug(Plug.Logger, log: :debug)
   plug(:match)
   plug(:dispatch)
 
   get "/" do
     conn
     |> put_resp_content_type("application/json")
-    |> send_resp(200, Poison.encode!(message()))
+    |> send_resp(200, Poison.encode!(response_message()))
   end
 
   get "/:name" do
@@ -21,7 +25,7 @@ defmodule IdenticonGenerator.Router do
     send_resp(conn, 404, "oops")
   end
 
-  defp message do
+  defp response_message do
     %{
       response_type: "in_channel",
       text: "Append /your_name to the url to generate an Identicon"
@@ -36,6 +40,12 @@ defmodule IdenticonGenerator.Router do
   end
 
   def start_link(_opts) do
-    Plug.Adapters.Cowboy.http(__MODULE__, [])
+    with {:ok, [port: port] = config} <- config() do
+      Logger.info("Starting server at http://localhost:#{port}/")
+      Plug.Adapters.Cowboy.http(__MODULE__, [], config)
+    end
   end
+
+  defp config, do: Application.fetch_env(:identicon_generator, __MODULE__)
+
 end
