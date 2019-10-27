@@ -1,6 +1,4 @@
 defmodule IdenticonGenerator.Application do
-  # See https://hexdocs.pm/elixir/Application.html
-  # for more information on OTP Applications
   @moduledoc """
   An endpoint to generate an Identicon based on a string in the url
   e.g. identicon/my_face

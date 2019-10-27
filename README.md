@@ -16,6 +16,14 @@ Feel free to have a play around with it.
 
 To generate docs for the functions included run `mix docs` and open `doc/index.html`
 
+## Get Started
+
+Prerequisites are you have to have [Elixir](https://elixir-lang.org/install.html) installed.
+
+Pull down this repo, cd into `/identicon` and run `mix deps.get`. Then run `mix run --no-halt`
+Open up your browser to [mix run --no-halt](http://localhost:8080)
+To generate an Identicon go to [http://localhost:8080/moosch](http://localhost:8080/moosch) or whatever string you want to use.
+
 ## License
 
 MIT Licensed. Use all you like at your own risky fun. Go nuts.
