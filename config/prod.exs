@@ -2,5 +2,9 @@
 import Config
 
 config :identicon_generator, IdenticonGenerator.Router,
-  port: String.to_integer(System.get_env("PORT") || "4444"),
-  redirect_url: System.get_env("REDIRECT_URL")
+  http: [:inet6, port: System.get_env("PORT") || 4000],
+  url: [host: "178.128.22.104", port: 80],
+  server: true
+
+# Do not print debug messages in production
+config :logger, level: :info
