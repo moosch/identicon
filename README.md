@@ -24,6 +24,14 @@ Pull down this repo, cd into `/identicon` and run `mix deps.get`. Then run `mix 
 Open up your browser to [mix run --no-halt](http://localhost:8080)
 To generate an Identicon go to [http://localhost:8080/moosch](http://localhost:8080/moosch) or whatever string you want to use.
 
+## Getting started with Docker
+
+Test it all works locally by building the release with `MIX_ENV=prod mix release identicon_generator`.
+Then run `PORT=8080 _build/prod/rel/identicon_generator/bin/identicon_generator start` and to go [http://localhost:8080](http://localhost:8080)
+
+If all working, build the docker image using `docker build -t identicon-generator .`
+Once built you can run it with `docker run --env PORT=4000  --publish 4000:4000 identicon-generator:latest`
+
 ## License
 
 MIT Licensed. Use all you like at your own risky fun. Go nuts.

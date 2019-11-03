@@ -6,12 +6,24 @@ defmodule IdenticonGenerator.Application do
 
   use Application
 
+  require Logger
+
   def start(_type, _args) do
+    port = get_port()
+
     children = [
-      IdenticonGenerator.Router
+      Plug.Cowboy.child_spec(
+        scheme: :http,
+        plug: IdenticonGenerator.Router,
+        options: [port: port]
+      )
     ]
+
+    Logger.info("Starting server at http://localhost:#{port}/")
 
     opts = [strategy: :one_for_one, name: IdenticonGenerator.Supervisor]
     Supervisor.start_link(children, opts)
   end
+
+  defp get_port, do: Application.get_env(:identicon_generator, :port, 8080)
 end

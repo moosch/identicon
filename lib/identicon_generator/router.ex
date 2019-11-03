@@ -8,6 +8,12 @@ defmodule IdenticonGenerator.Router do
   plug(:match)
   plug(:dispatch)
 
+  get "/healthcheck/ping" do
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Poison.encode!("pong!"))
+  end
+
   get "/" do
     conn
     |> put_resp_content_type("application/json")
@@ -31,21 +37,5 @@ defmodule IdenticonGenerator.Router do
       text: "Append /your_name to the url to generate an Identicon"
     }
   end
-
-  def child_spec(opts) do
-    %{
-      id: __MODULE__,
-      start: {__MODULE__, :start_link, [opts]}
-    }
-  end
-
-  def start_link(_opts) do
-    with {:ok, [port: port] = config} <- config() do
-      Logger.info("Starting server at http://localhost:#{port}/")
-      Plug.Adapters.Cowboy.http(__MODULE__, [], config)
-    end
-  end
-
-  defp config, do: Application.fetch_env(:identicon_generator, __MODULE__)
 
 end

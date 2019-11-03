@@ -1,39 +1,24 @@
-#===========
-#Build Stage
-#===========
 FROM bitwalker/alpine-elixir:1.9.1 as build
 
-#Copy the source folder into the Docker image
+ARG app_name=identicon_generator
+ARG build_env=prod
+
+ENV MIX_ENV=${build_env} TERM=xterm
+
+WORKDIR /opt/app
+
+RUN apk update \
+    && mix local.rebar --force \
+    && mix local.hex --force
+
+# TODO: Cleanup here - don't include everything, do mix deps.get --only prod, or use .dockerignore file
 COPY . .
 
-#Install dependencies and build Release
-RUN export MIX_ENV=prod && \
-    rm -Rf _build && \
-    mix deps.get && \
-    mix release
+RUN mix do deps.get, compile
 
-#Extract Release archive to /rel for copying in next stage
-RUN APP_NAME="identicon_generator" && \
-    RELEASE_DIR=`ls -d _build/prod/rel/$APP_NAME/releases/*/` && \
-    mkdir /export && \
-    tar -xf "$RELEASE_DIR/$APP_NAME.tar.gz" -C /export
+RUN mix release ${app_name} \
+    && mv _build/${build_env}/rel/${app_name} /opt/release \
+    && mv /opt/release/bin/${app_name} /opt/release/bin/start_server
 
-#================
-#Deployment Stage
-#================
-FROM pentacent/alpine-erlang-base:latest
-
-#Set environment variables and expose port
-EXPOSE 4000
-ENV REPLACE_OS_VARS=true \
-    PORT=4000
-
-#Copy and extract .tar.gz Release file from the previous stage
-COPY --from=build /export/ .
-
-#Change user
-USER default
-
-#Set default entrypoint and command
-ENTRYPOINT ["/opt/app/bin/identicon_generator"]
-CMD ["foreground"]
+ENTRYPOINT ["/opt/release/bin/start_server"]
+CMD ["start"]
