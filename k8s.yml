@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: identicon-generator
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: identicon-generator
+    spec:
+      containers:
+        - name: identicon-generator
+          image: moosch/identicon_generator
+          ports:
+            - containerPort: 4000
+          env:
+            - name: APP_HOST
+              value: "localhost"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: identicon-generator
+spec:
+  type: NodePort
+  ports:
+    - port: 4000
+  selector:
+    app: identicon-generator
